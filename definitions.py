@@ -39,6 +39,7 @@ class MCDAProblem(object):
         self.problemType = 0
         # if anyone needs it, enjoy
         self.epsilon = 0.05
+        self.weights = np.array([])
 
     def read_performance_table(self, file_path):
 
@@ -69,10 +70,12 @@ class MCDAProblem(object):
             reader = csv.reader(data_file, delimiter=';')
             line = next(reader)
 
-            if not len(line) == len(self.alternativesList):
-                raise ValueError("Not maching criteriaWeights len with alt len")
-            for val, alt in zip(line, self.alternativesList):
-                alt.weight = int(val)
+            line_len = len(line)
+            if not line_len == len(self.alternativesList[0].criterialist):
+                raise ValueError("Not maching numberOfBreakPoints len with alt len")
+            self.weights = np.zeros(line_len)
+            for i, val in enumerate(line):
+                self.weights[i] = float(val)
 
     def read_number_of_breakpoints(self, filePath):
 
@@ -107,5 +110,6 @@ class MCDAProblem(object):
             for j in range(len(self.alternativesList[i].criteriaList)):
                 performance_table[i][j] = self.alternativesList[i].criteriaList[j].value
 
-    # def get_criteria_weights(self):
+    def get_criteria_weights(self):
+        return self.weights
 
