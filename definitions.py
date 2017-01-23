@@ -1,4 +1,5 @@
 import csv
+import numpy as np
 
 
 class Alternative(object):
@@ -21,6 +22,7 @@ class Criterion(object):
         self.value = value
         self.minMax = "max"
         self.numberOfBreakPoints = 2
+        self.weight = 0
 
 
 class MCDAProblem(object):
@@ -61,6 +63,17 @@ class MCDAProblem(object):
             for val, alt in zip(line, self.alternativesList):
                 alt.rank = int(val)
 
+    def read_criteria_weights(self, file_path):
+
+        with open(file_path) as data_file:
+            reader = csv.reader(data_file, delimiter=';')
+            line = next(reader)
+
+            if not len(line) == len(self.alternativesList):
+                raise ValueError("Not maching criteriaWeights len with alt len")
+            for val, alt in zip(line, self.alternativesList):
+                alt.weight = int(val)
+
     def read_number_of_breakpoints(self, filePath):
 
         with open(filePath) as data_file:
@@ -86,3 +99,13 @@ class MCDAProblem(object):
             for alt in self.alternativesList:
                 for val, crit in zip(line, alt.criteriaList):
                     crit.minMax = val
+
+    def get_performance_table(self):
+        performance_table = np.zeros((len(self.alternativesList), len(self.alternativesList[0].criteriaList)))
+
+        for i in range(len(self.alternativesList)):
+            for j in range(len(self.alternativesList[i].criteriaList)):
+                performance_table[i][j] = self.alternativesList[i].criteriaList[j].value
+
+    # def get_criteria_weights(self):
+
