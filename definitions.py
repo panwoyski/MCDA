@@ -1,29 +1,29 @@
 import csv
 
 
-class alternative():
+class Alternative(object):
     def __init__(self):
         
         self.name = ""
         self.criteriaList = []
         self.rank = 0
     
-    def addCriterion(self, criterion):
+    def add_criterion(self, criterion):
         self.criteriaList.append(criterion)
 
-    def clearCriteria(self):
+    def clear_criteria(self):
         self.criteriaList.clear()
         pass
 
 
-class criterion():
-    def __init__(self, value = 0):
+class Criterion(object):
+    def __init__(self, value=0):
         self.value = value
         self.minMax = "max"
         self.numberOfBreakPoints = 2
 
 
-class MCDAProblem():
+class MCDAProblem(object):
     def __init__(self):
         self.alternativesList = []
         '''
@@ -35,26 +35,24 @@ class MCDAProblem():
         3 - .... something else
         '''
         self.problemType = 0
-        #if anyone needs it, enjoy
+        # if anyone needs it, enjoy
         self.epsilon = 0.05
 
-    def readPerformanceTable(self, filePath):
+    def read_performance_table(self, file_path):
 
-        with open(filePath) as data_file:
+        with open(file_path) as data_file:
             reader = csv.reader(data_file, delimiter=';')
             for data in reader:
-                alt = alternative()
+                alt = Alternative()
                 alt.name = data.pop(0)
                 for val in data:
-                    crit = criterion(val)
-                    alt.addCriterion(crit)
+                    crit = Criterion(val)
+                    alt.add_criterion(crit)
                 self.alternativesList.append(alt)
 
+    def read_alternatives_ranks(self, file_path):
 
-
-    def readAlternativesRanks(self, filePath):
-
-        with open(filePath) as data_file:
+        with open(file_path) as data_file:
             reader = csv.reader(data_file, delimiter=';')
             line = next(reader)
 
@@ -63,30 +61,26 @@ class MCDAProblem():
             for val, alt in zip(line, self.alternativesList):
                 alt.rank = int(val)
 
-
-
-    def readNumberOfBreakPoints(self, filePath):
+    def read_number_of_breakpoints(self, filePath):
 
         with open(filePath) as data_file:
             reader = csv.reader(data_file, delimiter=';')
             line = next(reader)
             for alt in self.alternativesList:
-                #check input for each alternative
+                # check input for each alternative
                 if not len(line) == len(alt.criteriaList):
                     raise ValueError("Not maching numberOfBreakPoints len with criteria len in alt: " + alt.name)
             for alt in self.alternativesList:
                 for val, crit in zip(line, alt.criteriaList):
                     crit.numberOfBreakPoints = int(val)
 
+    def read_criteria_min_max(self, file_path):
 
-
-    def readCriteriaMinMax(self, filePath):
-
-        with open(filePath) as data_file:
+        with open(file_path) as data_file:
             reader = csv.reader(data_file, delimiter=';')
             line = next(reader)
             for alt in self.alternativesList:
-                #check input for each alternative
+                # check input for each alternative
                 if not len(line) == len(alt.criteriaList):
                     raise ValueError("Not maching criteriaMinMax len with criteria len in alt: " + alt.name)
             for alt in self.alternativesList:
