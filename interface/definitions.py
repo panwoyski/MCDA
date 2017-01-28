@@ -4,7 +4,6 @@ import numpy as np
 
 class Alternative(object):
     def __init__(self):
-        
         self.name = ""
         self.criteriaList = []
         self.rank = 0
@@ -14,7 +13,6 @@ class Alternative(object):
 
     def clear_criteria(self):
         self.criteriaList.clear()
-        pass
 
 
 class Criterion(object):
@@ -43,10 +41,10 @@ class MCDAProblem(object):
         self.epsilon = 0.05
         self.weights = np.array([])
 
-    def read_performance_table(self, file_path):
+    def read_performance_table(self, file_path, delimiter=';'):
 
         with open(file_path) as data_file:
-            reader = csv.reader(data_file, delimiter=';')
+            reader = csv.reader(data_file, delimiter)
             for data in reader:
                 alt = Alternative()
                 alt.name = data.pop(0)
@@ -55,10 +53,10 @@ class MCDAProblem(object):
                     alt.add_criterion(crit)
                 self.alternativesList.append(alt)
 
-    def read_alternatives_ranks(self, file_path):
+    def read_alternatives_ranks(self, file_path, delimiter=';'):
 
         with open(file_path) as data_file:
-            reader = csv.reader(data_file, delimiter=';')
+            reader = csv.reader(data_file, delimiter=delimiter)
             line = next(reader)
 
             if not len(line) == len(self.alternativesList):
@@ -66,10 +64,10 @@ class MCDAProblem(object):
             for val, alt in zip(line, self.alternativesList):
                 alt.rank = int(val)
 
-    def read_criteria_weights(self, file_path):
+    def read_criteria_weights(self, file_path, delimiter=';'):
 
         with open(file_path) as data_file:
-            reader = csv.reader(data_file, delimiter=';')
+            reader = csv.reader(data_file, delimiter=delimiter)
             line = next(reader)
 
             line_len = len(line)
@@ -79,10 +77,10 @@ class MCDAProblem(object):
             for i, val in enumerate(line):
                 self.weights[i] = float(val)
 
-    def read_number_of_breakpoints(self, file_path):
+    def read_number_of_breakpoints(self, file_path, delimiter=';'):
 
         with open(file_path) as data_file:
-            reader = csv.reader(data_file, delimiter=';')
+            reader = csv.reader(data_file, delimiter=delimiter)
             line = next(reader)
             for alt in self.alternativesList:
                 # check input for each alternative
@@ -92,10 +90,10 @@ class MCDAProblem(object):
                 for val, crit in zip(line, alt.criteriaList):
                     crit.numberOfBreakPoints = int(val)
 
-    def read_criteria_min_max(self, file_path):
+    def read_criteria_min_max(self, file_path, delimiter=';'):
 
         with open(file_path) as data_file:
-            reader = csv.reader(data_file, delimiter=';')
+            reader = csv.reader(data_file, delimiter=delimiter)
             line = next(reader)
             for alt in self.alternativesList:
                 # check input for each alternative
