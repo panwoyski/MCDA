@@ -1,6 +1,6 @@
 from interface.definitions import MCDAProblem, Alternative, Criterion
 import numpy as np
-from utils.matrice_tools import apply_on_each_index
+from utils.matrice_tools import apply_on_each_index, apply_on_each_element
 
 
 class MCDAProxy(object):
@@ -45,6 +45,9 @@ class MCDAProxy(object):
 
     def q(self, i):
         return self.problem.criteria_indifference[i]
+
+    def veto(self, i):
+        return self.problem.veto_thresholds[i]
 
 
 def electre_is(problem):
@@ -92,10 +95,36 @@ def electre_is(problem):
 
         return float(part1 + part2) / norm
 
+    s = 0.9
     dim = pr.alt_count()
     concordance_mtx = apply_on_each_index(concordance, (dim, dim))
 
-    print(concordance_mtx)
+    def condition1(val):
+        return 0.5 < val < s
+
+    def filter_by_condition(value):
+        if condition1(value):
+            return value
+
+        return None
+
+    filtered_matrix = apply_on_each_element(filter_by_condition, concordance_mtx)
+    print(filtered_matrix)
+
+    def condition2(a, b, j):
+        def w(a, b, j):
+            norm = sum(pr.weight(j) for j in range(pr.crit_count()))
+            nom = 1 - concordance_mtx[a, b] - pr.weight(j) / norm
+            denom = 1 - s - pr.weight(j) / norm
+            return float(nom) / denom
+
+        return pr.value(a, j) + pr.veto(j) >= pr.q(j) + w(a, b, j)
+
+    def filter2(a, b):
+        return all(condition2(a, b, j) for j in range(pr.crit_count()))
+
+    filtered2_matrix = apply_on_each_index(filter2, (dim, dim))
+    print(filtered2_matrix)
 
 
 def main():
@@ -126,6 +155,7 @@ def main():
     problem.criteria_weights = [0.2, 0.3, 0.4, 0.1]
     problem.criteria_preference = [10., 2., 0.2, 1.7]
     problem.criteria_indifference = [5., 1., 0.1, 0.6]
+    problem.veto_thresholds = [500, 100, 10, 50]
 
     electre_is(problem)
 

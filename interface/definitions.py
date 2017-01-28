@@ -3,7 +3,7 @@ import numpy as np
 
 
 class Alternative(object):
-    def __init__(self, name='', rank=0, criteria_list=[], critera_weights=[]):
+    def __init__(self, name='', rank=0, criteria_list=[], critera_weights=[], veto_thresholds=[]):
         self.name = name
         self.criteriaList = criteria_list
         self.rank = rank
@@ -47,6 +47,7 @@ class MCDAProblem(object):
         self.criteria_weights = []
         self.criteria_preference = []
         self.criteria_indifference = []
+        self.veto_thresholds = []
 
     def read_performance_table(self, file_path, delimiter=';'):
 
