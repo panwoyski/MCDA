@@ -21,8 +21,6 @@ class Criterion(object):
     def __init__(self,
                  value=0,
                  weight=0,
-                 preference=0,
-                 indifference=0,
                  minmax='max',
                  breakpoints=2):
 
@@ -30,8 +28,6 @@ class Criterion(object):
         self.minMax = minmax
         self.numberOfBreakPoints = breakpoints
         self.weight = weight
-        self.preference = preference
-        self.indifference = indifference
 
 
 class MCDAProblem(object):
@@ -48,7 +44,9 @@ class MCDAProblem(object):
         self.problemType = 0
         # if anyone needs it, enjoy
         self.epsilon = 0.05
-        self.weights = np.array([])
+        self.criteria_weights = []
+        self.criteria_preference = []
+        self.criteria_indifference = []
 
     def read_performance_table(self, file_path, delimiter=';'):
 

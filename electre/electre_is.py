@@ -1,6 +1,5 @@
 from interface.definitions import MCDAProblem, Alternative, Criterion
 import numpy as np
-import itertools as it
 from utils.matrice_tools import apply_on_each_index
 
 
@@ -41,11 +40,11 @@ class MCDAProxy(object):
     def direction(self, i):
         return self.criterion(i, j).minmax
 
-    def p(self, i, j):
-        return self.criterion(i, j).preference
+    def p(self, i):
+        return self.problem.criteria_preference[i]
 
-    def q(self, i, j):
-        return self.criterion(i, j).indifference
+    def q(self, i):
+        return self.problem.criteria_indifference[i]
 
 
 def electre_is(problem):
@@ -55,34 +54,41 @@ def electre_is(problem):
 
     def js(a, b):
         def predicate(j):
-            return not (pr.value(a, j) + pr.q(a, j) >= pr.value(b, j))
+            return pr.value(a, j) >= pr.value(b, j) - pr.q(j)
 
         indexes = filter(predicate, range(pr.crit_count()))
         return list(indexes)
 
     def jq(a, b):
         def predicate(j):
-            return not (pr.value(a, j) + pr.q(a, j) < pr.value(a, j) <= pr.value(b, j) + pr.p(b, j))
+            return pr.value(b, j) - pr.p(j) <= pr.value(a, j) < pr.value(b, j) - pr.q(j)
 
         indexes = filter(predicate, range(pr.crit_count()))
         return list(indexes)
 
+    def jp(a, b):
+        def predicate(j):
+            return pr.value(b, j) > pr.value(a, j) + pr.p(j)
+
+        indexes = filter(predicate, range(pr.crit_count()))
+        return list[indexes]
+
     def fi(a, b, j):
-        nom = pr.value(a, j) + pr.p(a, j) - pr.q(b, j)
-        denom = pr.p(a, j) - pr.q(a, j)
+        nom = pr.p(j) + pr.value(a, j) - pr.value(b, j)
+        denom = pr.p(j) - pr.q(j)
         return float(nom)/denom
 
     def concordance(a, b):
         part1 = sum(pr.weight(j) for j in js(a, b))
+
         part2 = sum(fi(a, b, j) * pr.weight(j) for j in jq(a, b))
-        return part1 + part2
+
+        norm = sum(pr.weight(j) for j in range(pr.crit_count()))
+
+        return float(part1 + part2) / norm
 
     dim = pr.alt_count()
     concordance_mtx = apply_on_each_index(concordance, (dim, dim))
-    #
-    # print(js(1, 2))
-    # print(jq(1, 2))
-    # print([fi(1, 2, x) for x in range(pr.crit_count())])
     print(concordance_mtx)
 
 
@@ -90,28 +96,30 @@ def main():
     problem = MCDAProblem()
 
     alt1 = Alternative("test1", 0, [
-        Criterion(10, 1, 0.2, 0.3),
-        Criterion(9, 1, 0.3, 0.5),
-        Criterion(8, 1, 0.3, 0.5),
-        Criterion(11, 1, 0.2, 0.1),
+        Criterion(200),
+        Criterion(10),
+        Criterion(0.1),
+        Criterion(5),
     ])
 
     alt2 = Alternative("test1", 0, [
-        Criterion(9, 1, 0.3, 0.5),
-        Criterion(10, 1, 0.2, 0.3),
-        Criterion(11, 1, 0.5, 0.2),
-        Criterion(8, 1, 0.3, 0.5),
+        Criterion(150),
+        Criterion(20),
+        Criterion(0.5),
+        Criterion(1),
     ])
 
     alt3 = Alternative("test1", 0, [
-        Criterion(9, 1, 0.3, 0.5),
-        Criterion(11, 1, 0.2, 0.5),
-        Criterion(10, 1, 0.2, 0.3),
-        Criterion(8, 1, 0.3, 0.5),
+        Criterion(250),
+        Criterion(15),
+        Criterion(1),
+        Criterion(3),
     ])
 
     problem.alternativesList = [alt1, alt2, alt3]
-    problem.criteria_weights = [0.7, 0.6, 0.8, 0.4]
+    problem.criteria_weights = [0.2, 0.3, 0.4, 0.1]
+    problem.criteria_preference = [10., 2., 0.2, 1.7]
+    problem.criteria_indifference = [5., 1., 0.1, 0.6]
 
     electre_is(problem)
 
