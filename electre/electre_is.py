@@ -72,9 +72,18 @@ def electre_is(problem):
         denom = pr.p(a, j) - pr.q(a, j)
         return float(nom)/denom
 
-    print(js(1, 2))
-    print(jq(1, 2))
-    print([fi(1, 2, x) for x in range(pr.crit_count())])
+    def concordance(a, b):
+        part1 = sum(pr.weight(j) for j in js(a, b))
+        part2 = sum(fi(a, b, j) * pr.weight(j) for j in jq(a, b))
+        return part1 + part2
+
+    dim = pr.alt_count()
+    concordance_mtx = apply_on_each_index(concordance, (dim, dim))
+    #
+    # print(js(1, 2))
+    # print(jq(1, 2))
+    # print([fi(1, 2, x) for x in range(pr.crit_count())])
+    print(concordance_mtx)
 
 
 def main():
@@ -102,6 +111,7 @@ def main():
     ])
 
     problem.alternativesList = [alt1, alt2, alt3]
+    problem.criteria_weights = [0.7, 0.6, 0.8, 0.4]
 
     electre_is(problem)
 
