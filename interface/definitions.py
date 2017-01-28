@@ -3,26 +3,34 @@ import numpy as np
 
 
 class Alternative(object):
-    def __init__(self):
-        self.name = ""
-        self.criteriaList = []
-        self.rank = 0
+    def __init__(self, name='', rank=0, criteria_list=[]):
+        self.name = name
+        self.criteriaList = criteria_list
+        self.rank = rank
     
     def add_criterion(self, criterion):
         self.criteriaList.append(criterion)
+        return self
 
     def clear_criteria(self):
         self.criteriaList.clear()
 
 
 class Criterion(object):
-    def __init__(self, value=0):
+    def __init__(self,
+                 value=0,
+                 weight=0,
+                 preference=0,
+                 indiffernce=0,
+                 minmax='max',
+                 breakpoints=2):
+
         self.value = value
-        self.minMax = "max"
-        self.numberOfBreakPoints = 2
-        self.weight = 0
-        self.preference = 0
-        self.indifference = 0
+        self.minMax = minmax
+        self.numberOfBreakPoints = breakpoints
+        self.weight = weight
+        self.preference = preference
+        self.indifference = indiffernce
 
 
 class MCDAProblem(object):
