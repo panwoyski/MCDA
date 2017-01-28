@@ -21,7 +21,7 @@ class Criterion(object):
                  value=0,
                  weight=0,
                  preference=0,
-                 indiffernce=0,
+                 indifference=0,
                  minmax='max',
                  breakpoints=2):
 
@@ -30,7 +30,7 @@ class Criterion(object):
         self.numberOfBreakPoints = breakpoints
         self.weight = weight
         self.preference = preference
-        self.indifference = indiffernce
+        self.indifference = indifference
 
 
 class MCDAProblem(object):
@@ -120,3 +120,15 @@ class MCDAProblem(object):
 
     def get_criteria_weights(self):
         return self.weights
+
+    def apply_on_each_crit(self, func):
+        x_dim = len(self.alternativesList)
+        y_dim = len(self.alternativesList[0].criteriaList) if x_dim > 0 else 0
+
+        result = np.zeros((x_dim, y_dim))
+
+        for x in range(x_dim):
+            for y in range(y_dim):
+                result[x, y] = func(self.alternativesList[x].criteriaList[y])
+
+        return result

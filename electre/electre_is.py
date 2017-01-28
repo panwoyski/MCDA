@@ -1,15 +1,19 @@
 from interface.definitions import MCDAProblem, Alternative, Criterion
+import numpy as np
+from utils.matrice_tools import apply_on_each_index, apply_on_each_element
 
 
 def electre_is(problem):
-    assert isinstance(problem, type(MCDAProblem)), "This metod works only with MCDAproblems"
+    assert isinstance(problem, MCDAProblem), "This metod works only with MCDAproblems"
 
-    for alt in problem.alternativesList:
-        print(len(alt.criteriaList))
+    alt_vals = problem.apply_on_each_crit(lambda crit: crit.value)
+    alt_weights = problem.apply_on_each_crit(lambda crit: crit.weight)
+    print(alt_vals)
+    print(alt_weights)
 
 
 def main():
-    problem = MCDAProblem
+    problem = MCDAProblem()
 
     alt1 = Alternative("test1", 0, [
         Criterion(10, 1, 0.2, 0.3),
