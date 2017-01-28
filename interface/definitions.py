@@ -23,6 +23,8 @@ class Criterion(object):
         self.minMax = "max"
         self.numberOfBreakPoints = 2
         self.weight = 0
+        self.preference = 0
+        self.indifference = 0
 
 
 class MCDAProblem(object):
@@ -77,9 +79,9 @@ class MCDAProblem(object):
             for i, val in enumerate(line):
                 self.weights[i] = float(val)
 
-    def read_number_of_breakpoints(self, filePath):
+    def read_number_of_breakpoints(self, file_path):
 
-        with open(filePath) as data_file:
+        with open(file_path) as data_file:
             reader = csv.reader(data_file, delimiter=';')
             line = next(reader)
             for alt in self.alternativesList:
@@ -112,4 +114,3 @@ class MCDAProblem(object):
 
     def get_criteria_weights(self):
         return self.weights
-

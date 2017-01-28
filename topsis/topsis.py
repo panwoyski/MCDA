@@ -1,11 +1,10 @@
-from definitions import MCDAProblem
-import numpy as np
+from interface.definitions import MCDAProblem
+
 
 def topsis(problem):
     performance_table = problem.get_performance_table()
     criteria_weights = problem.get_criteria_weights()
     print(criteria_weights)
-
 
 
 def main():

@@ -1,4 +1,4 @@
-from definitions import MCDAProblem
+from interface.definitions import MCDAProblem
 
 
 def mojaMetoda(problem):

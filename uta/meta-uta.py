@@ -1,10 +1,9 @@
-
-import csv
-import numpy as np
-import scipy.optimize as sopt
 from pprint import pprint
 
-from definitions import *
+import scipy.optimize as sopt
+
+from interface.definitions import *
+
 
 def metauta(problem):
 
