@@ -5,8 +5,8 @@ def mojaMetoda(problem):
     #tutaj kod metody
     pass
 
-if __name__ == '__main__':
-    
+
+def main():
     problem = MCDAProblem()
     problem.read_performance_table('performanceTable.csv')
     problem.read_criteria_min_max('criteriaMinMax.csv')
@@ -15,3 +15,7 @@ if __name__ == '__main__':
 
 
     solution = mojaMetoda(problem)
+
+
+if __name__ == '__main__':
+    main()

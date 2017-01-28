@@ -71,7 +71,7 @@ def electre_is(problem):
             return pr.value(b, j) > pr.value(a, j) + pr.p(j)
 
         indexes = filter(predicate, range(pr.crit_count()))
-        return list[indexes]
+        return list(indexes)
 
     def fi(a, b, j):
         nom = pr.p(j) + pr.value(a, j) - pr.value(b, j)
@@ -79,6 +79,11 @@ def electre_is(problem):
         return float(nom)/denom
 
     def concordance(a, b):
+        if len(jp(a, b)) == pr.crit_count():
+            return 0
+        if len(js(a, b)) == pr.crit_count():
+            return 1
+
         part1 = sum(pr.weight(j) for j in js(a, b))
 
         part2 = sum(fi(a, b, j) * pr.weight(j) for j in jq(a, b))
@@ -89,6 +94,7 @@ def electre_is(problem):
 
     dim = pr.alt_count()
     concordance_mtx = apply_on_each_index(concordance, (dim, dim))
+
     print(concordance_mtx)
 
 
