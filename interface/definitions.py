@@ -54,7 +54,7 @@ class MCDAProblem(object):
             for data in reader:
                 alt = Alternative(name=data.pop(0))
                 for val in data:
-                    crit = Criterion(val)
+                    crit = Criterion(float(val))
                     alt.add_criterion(crit)
                 self.alternativesList.append(alt)
 
@@ -76,7 +76,7 @@ class MCDAProblem(object):
             line = next(reader)
 
             line_len = len(line)
-            if not line_len == len(self.alternativesList[0].criterialist):
+            if not line_len == len(self.alternativesList[0].criteriaList):
                 raise ValueError("Not maching criteria_weights len with alt len")
 
             self.criteria_weights = np.zeros(line_len)
@@ -108,6 +108,54 @@ class MCDAProblem(object):
             for alt in self.alternativesList:
                 for val, crit in zip(line, alt.criteriaList):
                     crit.minMax = val
+
+    def read_veto_thresholds(self, file_path, delimiter=','):
+
+        with open(file_path) as data_file:
+            reader = csv.reader(data_file, delimiter=delimiter)
+            line = next(reader)
+
+            line_len = len(line)
+            for alt in self.alternativesList:
+                # check input for each alternative
+                if not line_len == len(alt.criteriaList):
+                    raise ValueError("Criteria amount doesnt match with veto amount in alt: " + alt.name)
+
+            self.veto_thresholds = np.zeros(line_len)
+            for i, val in enumerate(line):
+                self.veto_thresholds[i] = float(val)
+
+    def read_preference(self, file_path, delimiter=','):
+
+        with open(file_path) as data_file:
+            reader = csv.reader(data_file, delimiter=delimiter)
+            line = next(reader)
+
+            line_len = len(line)
+            for alt in self.alternativesList:
+                # check input for each alternative
+                if not line_len == len(alt.criteriaList):
+                    raise ValueError("Criteria amount doesnt match with veto amount in alt: " + alt.name)
+
+            self.criteria_preference = np.zeros(line_len)
+            for i, val in enumerate(line):
+                self.criteria_preference[i] = float(val)
+
+    def read_indifference(self, file_path, delimiter=','):
+
+        with open(file_path) as data_file:
+            reader = csv.reader(data_file, delimiter=delimiter)
+            line = next(reader)
+
+            line_len = len(line)
+            for alt in self.alternativesList:
+                # check input for each alternative
+                if not line_len == len(alt.criteriaList):
+                    raise ValueError("Criteria amount doesnt match with veto amount in alt: " + alt.name)
+
+            self.criteria_indifference = np.zeros(line_len)
+            for i, val in enumerate(line):
+                self.criteria_indifference[i] = float(val)
 
     def get_performance_table(self):
         performance_table = np.zeros((len(self.alternativesList), len(self.alternativesList[0].criteriaList)))

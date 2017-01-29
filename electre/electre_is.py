@@ -130,32 +130,13 @@ def electre_is(problem):
 def main():
     problem = MCDAProblem()
 
-    alt1 = Alternative("test1", 0, [
-        Criterion(200),
-        Criterion(10),
-        Criterion(0.1),
-        Criterion(5),
-    ])
+    path_root = '../input_files/electre_test_input/%s'
 
-    alt2 = Alternative("test1", 0, [
-        Criterion(150),
-        Criterion(20),
-        Criterion(0.5),
-        Criterion(1),
-    ])
-
-    alt3 = Alternative("test1", 0, [
-        Criterion(250),
-        Criterion(15),
-        Criterion(1),
-        Criterion(3),
-    ])
-
-    problem.alternativesList = [alt1, alt2, alt3]
-    problem.criteria_weights = [0.2, 0.3, 0.4, 0.1]
-    problem.criteria_preference = [10., 2., 0.2, 1.7]
-    problem.criteria_indifference = [5., 1., 0.1, 0.6]
-    problem.veto_thresholds = [500, 100, 10, 50]
+    problem.read_performance_table(path_root % 'testAlternatives.csv', delimiter=',')
+    problem.read_criteria_weights(path_root % 'weights.csv', delimiter=',')
+    problem.read_veto_thresholds(path_root % 'vetos.csv', delimiter=',')
+    problem.read_preference(path_root % 'preference.csv', delimiter=',')
+    problem.read_indifference(path_root % 'indifference.csv', delimiter=',')
 
     electre_is(problem)
 
