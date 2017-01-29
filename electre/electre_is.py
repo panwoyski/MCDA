@@ -37,7 +37,7 @@ class MCDAProxy(object):
     def value(self, i, j):
         return self.criterion(i, j).value
 
-    def direction(self, i):
+    def direction(self, i, j):
         return self.criterion(i, j).minmax
 
     def p(self, i):
@@ -48,6 +48,9 @@ class MCDAProxy(object):
 
     def veto(self, i):
         return self.problem.veto_thresholds[i]
+
+    def alternative(self, i):
+        return self.problem.alternativesList[i]
 
 
 def electre_is(problem):
@@ -95,7 +98,7 @@ def electre_is(problem):
 
         return float(part1 + part2) / norm
 
-    s = 0.9
+    s = 0.60
     dim = pr.alt_count()
     concordance_mtx = apply_on_each_index(concordance, (dim, dim))
 
@@ -106,25 +109,43 @@ def electre_is(problem):
         if condition1(value):
             return value
 
-        return None
+        return 0
 
     filtered_matrix = apply_on_each_element(filter_by_condition, concordance_mtx)
-    print(filtered_matrix)
+    # print(filtered_matrix)
+
+    import itertools as it
+
+    # failed_dict = {(a, b): [] for a, b in it.permutations(range(pr.alt_count()), 2)}
 
     def condition2(a, b, j):
-        def w(a, b, j):
-            norm = sum(pr.weight(j) for j in range(pr.crit_count()))
-            nom = 1 - concordance_mtx[a, b] - pr.weight(j) / norm
-            denom = 1 - s - pr.weight(j) / norm
+        def w(x, y, i):
+            norm = sum(pr.weight(jj) for jj in range(pr.crit_count()))
+            nom = 1 - concordance_mtx[x, y] - pr.weight(i) / norm
+            denom = 1 - s - pr.weight(i) / norm
             return float(nom) / denom
 
-        return pr.value(a, j) + pr.veto(j) >= pr.q(j) + w(a, b, j)
+        # if not (pr.value(a, j) + pr.veto(j) >= pr.value(b, j) + pr.q(j) + w(a, b, j)):
+        #     failed_dict[(a, b)].append(j)
+
+        return pr.value(a, j) + pr.veto(j) >= pr.value(b, j) + pr.q(j) + w(a, b, j)
 
     def filter2(a, b):
         return all(condition2(a, b, j) for j in range(pr.crit_count()))
 
     filtered2_matrix = apply_on_each_index(filter2, (dim, dim))
-    print(filtered2_matrix)
+
+    result_matrix = filtered_matrix * filtered2_matrix
+
+    non_zero = result_matrix.nonzero()
+    graph_dict = {k: [] for k in non_zero[0]}
+    for i, k in enumerate(non_zero[0]):
+        graph_dict[k].append(non_zero[1][i])
+
+    filtered = list(filter(lambda x: x not in non_zero[1], non_zero[0]))
+    best_alternatives = [pr.alternative(i) for i in filtered]
+
+    return best_alternatives, graph_dict
 
 
 def main():
@@ -138,7 +159,10 @@ def main():
     problem.read_preference(path_root % 'preference.csv', delimiter=',')
     problem.read_indifference(path_root % 'indifference.csv', delimiter=',')
 
-    electre_is(problem)
+    best_alternatives, graph = electre_is(problem)
+
+    print('Najlepsze alternatywy')
+    print(', '.join(alt.name for alt in best_alternatives))
 
 
 if __name__ == '__main__':
