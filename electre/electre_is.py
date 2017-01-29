@@ -114,7 +114,7 @@ def electre_is(problem):
     filtered_matrix = apply_on_each_element(filter_by_condition, concordance_mtx)
     # print(filtered_matrix)
 
-    import itertools as it
+    # import itertools as it
 
     # failed_dict = {(a, b): [] for a, b in it.permutations(range(pr.alt_count()), 2)}
 
