@@ -10,8 +10,6 @@ def topsis(problem,
     criteria_weights = problem.criteria_weights
     criteria_directions = problem.criteria_directions
 
-    print(performance_table)
-
     alternative_number, criteria_number = performance_table.shape
     divide_by = np.arange(criteria_number, dtype=np.float32)
 
@@ -43,8 +41,15 @@ def topsis(problem,
         pis = positive_ideal_solution
         nis = negative_ideal_solution
 
-    print(pis)
-    print(nis)
+    err_pis = np.power((wnm - pis), 2)
+    err_nis = np.power((wnm - nis), 2)
+
+    spisv = np.sqrt(err_pis.sum(1))
+    snisv = np.sqrt(err_nis.sum(1))
+
+    results = snisv / (spisv + snisv)
+
+    return results
 
 
 def main():
@@ -60,6 +65,7 @@ def main():
     problem.criteria_directions = ["min", "max", "max", "max"]
 
     ret = topsis(problem)
+    print(ret)
 
 
 if __name__ == '__main__':
