@@ -3,15 +3,13 @@ import numpy as np
 
 
 class Alternative(object):
-    def __init__(self, name='', rank=0, criteria_list=[], critera_weights=[], veto_thresholds=[]):
+    def __init__(self, name='', rank=0):
         self.name = name
-        self.criteriaList = criteria_list
+        self.criteriaList = []
         self.rank = rank
-        self.criteria_weights = critera_weights
     
     def add_criterion(self, criterion):
         self.criteriaList.append(criterion)
-        return self
 
     def clear_criteria(self):
         self.criteriaList.clear()
@@ -52,10 +50,9 @@ class MCDAProblem(object):
     def read_performance_table(self, file_path, delimiter=';'):
 
         with open(file_path) as data_file:
-            reader = csv.reader(data_file, delimiter)
+            reader = csv.reader(data_file, delimiter=delimiter)
             for data in reader:
-                alt = Alternative()
-                alt.name = data.pop(0)
+                alt = Alternative(name=data.pop(0))
                 for val in data:
                     crit = Criterion(val)
                     alt.add_criterion(crit)
@@ -68,7 +65,7 @@ class MCDAProblem(object):
             line = next(reader)
 
             if not len(line) == len(self.alternativesList):
-                raise ValueError("Not maching numberOfBreakPoints len with alt len")
+                raise ValueError("Not maching alternative_ranks len with alt len")
             for val, alt in zip(line, self.alternativesList):
                 alt.rank = int(val)
 
@@ -80,10 +77,11 @@ class MCDAProblem(object):
 
             line_len = len(line)
             if not line_len == len(self.alternativesList[0].criterialist):
-                raise ValueError("Not maching numberOfBreakPoints len with alt len")
-            self.weights = np.zeros(line_len)
+                raise ValueError("Not maching criteria_weights len with alt len")
+
+            self.criteria_weights = np.zeros(line_len)
             for i, val in enumerate(line):
-                self.weights[i] = float(val)
+                self.criteria_weights[i] = float(val)
 
     def read_number_of_breakpoints(self, file_path, delimiter=';'):
 
@@ -117,7 +115,3 @@ class MCDAProblem(object):
         for i in range(len(self.alternativesList)):
             for j in range(len(self.alternativesList[i].criteriaList)):
                 performance_table[i][j] = self.alternativesList[i].criteriaList[j].value
-
-    def get_criteria_weights(self):
-        return self.weights
-
