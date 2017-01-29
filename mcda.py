@@ -59,7 +59,7 @@ def electre_is_flow(problem, args):
         print(', '.join(alt.name for alt in best_alternatives))
     else:
         print('Dla zadanych parametrow brak rozwiazan')
-        print('struktura grafu:')
+        print('struktura grafu (indeksowana od zera):')
         print(graph)
 
 
