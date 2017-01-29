@@ -43,6 +43,7 @@ class MCDAProblem(object):
         # if anyone needs it, enjoy
         self.epsilon = 0.05
         self.criteria_weights = []
+        self.criteria_directions = []
         self.criteria_preference = []
         self.criteria_indifference = []
         self.veto_thresholds = []
@@ -57,6 +58,14 @@ class MCDAProblem(object):
                     crit = Criterion(float(val))
                     alt.add_criterion(crit)
                 self.alternativesList.append(alt)
+
+    def read_performance_from_matrix(self, matrix):
+        for i, line in enumerate(matrix):
+            alt = Alternative(name='a%s' % i)
+            for value in line:
+                crit = Criterion(float(value))
+                alt.add_criterion(crit)
+            self.alternativesList.append(alt)
 
     def read_alternatives_ranks(self, file_path, delimiter=';'):
 
@@ -158,8 +167,12 @@ class MCDAProblem(object):
                 self.criteria_indifference[i] = float(val)
 
     def get_performance_table(self):
-        performance_table = np.zeros((len(self.alternativesList), len(self.alternativesList[0].criteriaList)))
+        performance_table = np.zeros((len(self.alternativesList),
+                                      len(self.alternativesList[0]
+                                              .criteriaList)))
 
         for i in range(len(self.alternativesList)):
             for j in range(len(self.alternativesList[i].criteriaList)):
                 performance_table[i][j] = self.alternativesList[i].criteriaList[j].value
+
+        return performance_table
