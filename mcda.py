@@ -9,7 +9,7 @@ def main():
     topsis_path = 'input_files/topsis_test_input/%s.csv'
 
     parser = ap.ArgumentParser(description='Electre IS and Topsis Interface')
-    parser.add_argument('-m', '--method', type=str, help='Metoda do uruchomiena {electre_is,topsis}',
+    parser.add_argument('-m', '--method', type=str, help='Metoda do uruchomiena',
                         default='electre_is', action='store', choices=['electre_is', 'topsis'], dest='method')
     parser.add_argument('-alt', '--alternatives', type=str, help='Sciezka do pliku csv z macierza rankingu',
                         default=electre_root % 'testAlternatives', action='store', dest='perfTable')
@@ -25,6 +25,8 @@ def main():
                         default=topsis_path % 'directions', action='store', dest='dirs')
     parser.add_argument('-sep', '--separator', help='Separator w plikach csv',
                         default=',', action='store', dest='delimiter')
+    parser.add_argument('-s', '--svalue', help='Wartosc parametru s dla electre_is',
+                        default=0.60, action='store', dest='s', type=float)
 
     args = parser.parse_args()
 
@@ -51,6 +53,11 @@ def electre_is_flow(problem, args):
     problem.read_veto_thresholds(args.vetos, delimiter=args.delimiter)
     problem.read_preference(args.pref, delimiter=args.delimiter)
     problem.read_indifference(args.indif, delimiter=args.delimiter)
+    try:
+        problem.set_s_param(args.s)
+    except ValueError as e:
+        print(e)
+        return
 
     best_alternatives, graph = electre_is(problem)
 

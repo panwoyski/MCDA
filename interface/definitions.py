@@ -47,6 +47,7 @@ class MCDAProblem(object):
         self.criteria_preference = []
         self.criteria_indifference = []
         self.veto_thresholds = []
+        self.s_param = 0
 
     def read_performance_table(self, file_path, delimiter=';'):
 
@@ -195,3 +196,13 @@ class MCDAProblem(object):
 
     def get_alterntive(self, i):
         return self.alternativesList[i]
+
+    def set_s_param(self, s):
+        k = sum(self.criteria_weights)
+        kj = min(self.criteria_weights)
+        upper = 1 - kj/k
+
+        if not (0.5 < s < upper):
+            raise ValueError('s has to fulfill 0.5 < s < %s for current weight set' % upper)
+
+        self.s_param = s

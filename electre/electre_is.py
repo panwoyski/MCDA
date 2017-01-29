@@ -52,6 +52,9 @@ class MCDAProxy(object):
     def alternative(self, i):
         return self.problem.alternativesList[i]
 
+    def s(self):
+        return self.problem.s_param
+
 
 def electre_is(problem):
     assert isinstance(problem, MCDAProblem), "This metod works only with MCDAproblems"
@@ -98,7 +101,7 @@ def electre_is(problem):
 
         return float(part1 + part2) / norm
 
-    s = 0.60
+    s = pr.s()
     dim = pr.alt_count()
     concordance_mtx = apply_on_each_index(concordance, (dim, dim))
 
@@ -112,11 +115,6 @@ def electre_is(problem):
         return 0
 
     filtered_matrix = apply_on_each_element(filter_by_condition, concordance_mtx)
-    # print(filtered_matrix)
-
-    # import itertools as it
-
-    # failed_dict = {(a, b): [] for a, b in it.permutations(range(pr.alt_count()), 2)}
 
     def condition2(a, b, j):
         def w(x, y, i):
@@ -124,9 +122,6 @@ def electre_is(problem):
             nom = 1 - concordance_mtx[x, y] - pr.weight(i) / norm
             denom = 1 - s - pr.weight(i) / norm
             return float(nom) / denom
-
-        # if not (pr.value(a, j) + pr.veto(j) >= pr.value(b, j) + pr.q(j) + w(a, b, j)):
-        #     failed_dict[(a, b)].append(j)
 
         return pr.value(a, j) + pr.veto(j) >= pr.value(b, j) + pr.q(j) + w(a, b, j)
 
@@ -158,6 +153,7 @@ def main():
     problem.read_veto_thresholds(path_root % 'vetos.csv', delimiter=',')
     problem.read_preference(path_root % 'preference.csv', delimiter=',')
     problem.read_indifference(path_root % 'indifference.csv', delimiter=',')
+    problem.set_s_param(0.6)
 
     best_alternatives, graph = electre_is(problem)
 
@@ -166,8 +162,11 @@ def main():
         print(', '.join(alt.name for alt in best_alternatives))
     else:
         print('Dla zadanych parametrow brak rozwiazan')
-        print('struktura grafu:')
-        print(graph)
+        if len(graph):
+            print('struktura grafu:')
+            print(graph)
+        else:
+            print('Brak relacji spelniajacych zalozenia metody')
 
 
 if __name__ == '__main__':
