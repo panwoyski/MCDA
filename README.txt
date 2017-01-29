@@ -13,7 +13,7 @@ Python 3.5 + paczki
     itertools
     csv
 
-Sposob uruchomienia
+Sposob uruchomienia (zakladamy ze znajdujemy sie w katalogu bazowym projektu)
 python3 mcda.py -m electre_is
 
 Uruchamia metode Electre IS z parametrami z katalogu input_files/electre_test_input
