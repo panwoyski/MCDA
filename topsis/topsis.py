@@ -21,7 +21,7 @@ def topsis(problem,
     for a in performance_table:
         normalised_m = np.vstack((normalised_m, np.divide(a, divide_by)))
 
-    wnm = np.zeros(shape=(0,criteria_number))
+    wnm = np.zeros(shape=(0, criteria_number))
     for a in normalised_m:
         wnm = np.vstack((wnm, np.multiply(a, criteria_weights)))
 
@@ -49,7 +49,10 @@ def topsis(problem,
 
     results = snisv / (spisv + snisv)
 
-    return results
+    best_alt_index = results.argmax()
+    best_alt = problem.get_alterntive(best_alt_index)
+
+    return best_alt
 
 
 def main():
@@ -65,7 +68,7 @@ def main():
     problem.criteria_directions = ["min", "max", "max", "max"]
 
     ret = topsis(problem)
-    print(ret)
+    print('Best alternative is: %s' % ret.name)
 
 
 if __name__ == '__main__':

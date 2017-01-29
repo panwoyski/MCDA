@@ -176,3 +176,6 @@ class MCDAProblem(object):
                 performance_table[i][j] = self.alternativesList[i].criteriaList[j].value
 
         return performance_table
+
+    def get_alterntive(self, i):
+        return self.alternativesList[i]
