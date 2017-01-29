@@ -118,6 +118,22 @@ class MCDAProblem(object):
                 for val, crit in zip(line, alt.criteriaList):
                     crit.minMax = val
 
+    def read_criteria_directions(self, file_path, delimiter=','):
+
+        with open(file_path) as data_file:
+            reader = csv.reader(data_file, delimiter=delimiter)
+            line = next(reader)
+
+            line_len = len(line)
+            crit_len = len(self.alternativesList[0].criteriaList)
+            if not line_len == crit_len:
+                raise ValueError("Directions length has to match criteria length (%s != %s)" % (line_len, crit_len))
+
+            for val in line:
+                if val not in ('min', 'max'):
+                    raise ValueError('%s is not min nor max' % val)
+                self.criteria_directions.append(val)
+
     def read_veto_thresholds(self, file_path, delimiter=','):
 
         with open(file_path) as data_file:

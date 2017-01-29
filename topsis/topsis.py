@@ -58,14 +58,10 @@ def topsis(problem,
 def main():
     problem = MCDAProblem()
 
-    performance_tale = np.array([[5490, 51.4, 8.5, 285],
-                                 [6500, 70.6, 7,   288],
-                                 [6489, 54.3, 7.5, 290]])
-
-    problem.read_performance_from_matrix(performance_tale)
-
-    problem.criteria_weights = [0.35, 0.25, 0.25, 0.15]
-    problem.criteria_directions = ["min", "max", "max", "max"]
+    path_root = '../input_files/topsis_test_input/%s.csv'
+    problem.read_performance_table(path_root % 'performance_table', delimiter=',')
+    problem.read_criteria_weights(path_root % 'weights', delimiter=',')
+    problem.read_criteria_directions(path_root % 'directions', delimiter=',')
 
     ret = topsis(problem)
     print('Best alternative is: %s' % ret.name)
