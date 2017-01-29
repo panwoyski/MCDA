@@ -161,8 +161,13 @@ def main():
 
     best_alternatives, graph = electre_is(problem)
 
-    print('Najlepsze alternatywy')
-    print(', '.join(alt.name for alt in best_alternatives))
+    if len(best_alternatives):
+        print('Najlepsze alternatywy')
+        print(', '.join(alt.name for alt in best_alternatives))
+    else:
+        print('Dla zadanych parametrow brak rozwiazan')
+        print('struktura grafu:')
+        print(graph)
 
 
 if __name__ == '__main__':
